@@ -1,0 +1,1 @@
+web: gunicorn hawkers_project.wsgi
