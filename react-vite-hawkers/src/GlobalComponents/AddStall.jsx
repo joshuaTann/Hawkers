@@ -1,11 +1,10 @@
 import React from "react";
-import { useState, useEffect, useRef } from "react";
-import { Typography, TextField, Button } from "@mui/material";
-import { NavLink, useNavigate, useParams } from "react-router-dom";
-import axios from "axios";
+import { useState } from "react";
+import { Typography, TextField, Button, Checkbox } from "@mui/material";
+import { NavLink, useNavigate } from "react-router-dom";
 
 
-function EditStall() {
+function AddStall() {
     const [stallName, setStallName] = useState("");
     const [image, setImage] = useState("");
     const [AddressLine1, setAddressLine1] = useState("");
@@ -15,51 +14,6 @@ function EditStall() {
     const [closingTime, setClosingTime] = useState("");
     const [AmIOpen, setAmIOpen] = useState(true);
     const navigate = useNavigate()
-
-    const [fetchState, setFetchState] = useState("loading");
-    const [hawker, setHawker] = useState([]);
-    const isSubscribed = useRef(true);
-
-    const { id } = useParams()
-
-    //get the hawker to work on
-    useEffect(() => {
-        const fetchHawker = async () => {
-            const URL = `http://localhost:8000/Hawkers/${id}`;
-            try {
-                setFetchState("loading");
-                const data = await axios.get(URL);
-                console.log("data", data.data);
-                if (!isSubscribed) {
-                    console.log("notSubbed");
-                    return null;
-                }
-                setHawker(data.data);
-                setStallName(data.data.Name);
-                setImage(data.data.Image);
-                setAddressLine1(data.data.AddressLine1);
-                setAddressLine2(data.data.AddressLine2);
-                setPostcode(data.data.Postcode);
-                setOpeningTime(data.data.OpeningTime);
-                setClosingTime(data.data.ClosingTime);
-                setAmIOpen(data.data.AmIOpen);
-                setFetchState("complete");
-            }
-            catch (error) {
-                setFetchState("error");
-                console.log("error situation", error);
-                // navigate("/Hawkers");
-            }
-        }
-        fetchHawker();
-        return () => {
-            isSubscribed.current = false;
-        }
-    }, []);
-
-    console.log(stallName);
-    console.log("AM I OPEN", hawker.AmIOpen)
-
 
     const typeStallName = (event) => {
         setStallName(event.target.value);
@@ -86,12 +40,12 @@ function EditStall() {
         setAmIOpen(event.target.value);
     };
 
-    const editHawker = async (Name, Image, AddressLine1, AddressLine2, Postcode, OpeningTime, ClosingTime, AmIOpen) => {
-        const response = await fetch(`http://localhost:8000/Hawkers/${id}/`, {
-            method: "PUT",
-            headers : { 
-                'Content-Type': 'application/json',
-               },
+    const addHawker = async (Name, Image, AddressLine1, AddressLine2, Postcode, OpeningTime, ClosingTime, AmIOpen) => {
+        const response = await fetch("http://localhost:8000/Hawkers/", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
             body: JSON.stringify({
                 Name,
                 Image,
@@ -108,10 +62,12 @@ function EditStall() {
         navigate("/Hawkers")
     };
 
+
+
     return (
         <div className="login-page">
             <Typography variant="h3">
-                Edit stall
+                Add a stall
             </Typography>
             <NavLink to={"/Hawkers"}>
                 <p>Back to Main Page</p>
@@ -123,8 +79,7 @@ function EditStall() {
                         name="username"
                         size="small"
                         autoComplete="off"
-                        helperText="Name"
-                        value={stallName}
+                        placeholder="Set Stall Name"
                         onChange={typeStallName}
                     />
                     <TextField
@@ -132,8 +87,7 @@ function EditStall() {
                         name="image"
                         size="small"
                         autoComplete="off"
-                        helperText="Image URL"
-                        value={image}
+                        placeholder="Image Link"
                         onChange={typeImage}
                     />
                     <TextField
@@ -141,8 +95,7 @@ function EditStall() {
                         name="AddressLine1"
                         size="small"
                         autoComplete="off"
-                        helperText="Address Line 1"
-                        value={AddressLine1}
+                        placeholder="Address Line #1"
                         onChange={typeAddressLine1}
                     />
                     <TextField
@@ -150,8 +103,7 @@ function EditStall() {
                         name="AddressLine2"
                         size="small"
                         autoComplete="off"
-                        helperText="Address Line 2"
-                        value={AddressLine2}
+                        placeholder="Address Line #2"
                         onChange={typeAddressLine2}
                     />
                     <TextField
@@ -159,8 +111,7 @@ function EditStall() {
                         name="postcode"
                         size="small"
                         autoComplete="off"
-                        helperText="Postcode"
-                        value={postcode}
+                        placeholder="Postcode"
                         onChange={typePostcode}
                     />
                     <TextField
@@ -168,8 +119,7 @@ function EditStall() {
                         name="Opening Time"
                         size="small"
                         autoComplete="off"
-                        helperText="Opening Time"
-                        value={openingTime}
+                        placeholder="Opening Time"
                         onChange={typeOpeningTime}
                     />
                     <TextField
@@ -177,15 +127,20 @@ function EditStall() {
                         name="Closing Time"
                         size="small"
                         autoComplete="off"
-                        helperText="Closing Time"
-                        value={closingTime}
+                        placeholder="Closing Time"
                         onChange={typeClosingTime}
                     />
-                    <Button onClick={() => editHawker(stallName, image, AddressLine1, AddressLine2, postcode, openingTime, closingTime, AmIOpen)}>Edit stall</Button>
+                    <Checkbox
+                        label="Open?"
+                        defaultChecked
+                        onChange={typeAmIOpen}
+                        inputProps={{ 'aria-label': 'controlled' }}
+                    />
+                    <Button onClick={() => addHawker(stallName, image, AddressLine1, AddressLine2, postcode, openingTime, closingTime, AmIOpen)}>Add stall</Button>
                 </form>
             </div>
         </div>
     );
 }
 
-export default EditStall;
+export default AddStall;

@@ -3,7 +3,7 @@ import { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import { Button, Card, CardActions, CardContent, CardMedia, Chip, Typography, Grid } from "@mui/material";
 import { Box } from '@mui/system';
-import { NavLink } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 
 
@@ -13,6 +13,7 @@ function Homepage() {
     const [fetchState, setFetchState] = useState("loading");
     const [hawkers, setHawkers] = useState([]);
     const isSubscribed = useRef(true);
+    const navigate = useNavigate();
 
     //get the list of hawkers
     useEffect(() => {
@@ -32,7 +33,7 @@ function Homepage() {
             catch (error) {
                 setFetchState("error");
                 console.log("error situation", error);
-                history.replace("/");
+                navigate("/Hawkers");
             }
         }
         fetchAllHawkers();
@@ -52,32 +53,30 @@ function Homepage() {
             }
         }
 
-        const openingHours = () => {
-            return(
-                `${eachHawker.OpeningTime} to ${eachHawker.ClosingTime}`
-            )
-        }
-        return (
-            <>
-                <Grid item sm={4} key={i}>
-                    <Card>
-                        <CardMedia
-                            component="img"
-                            height="140px"
-                            image={eachHawker.Image}
-                            alt="Picture of the damn car"
-                        />
-                        <CardContent>
-                            <h1>{eachHawker.Name}</h1>
-                            <div>{eachHawker.AddressLine1}</div>
-                            <div>{eachHawker.AddressLine2}</div>
-                            <div>{Openornot()}</div>
-                            <div>{openingHours()}</div>
-                        </CardContent>
-                    </Card>
-                </Grid>
 
-            </>
+        return (
+            <Grid item sm={4} key={i}>
+                <Card>
+                    <CardMedia
+                        component="img"
+                        height="140px"
+                        image={eachHawker.Image}
+                        alt="Picture of Food"
+                    />
+                    <CardContent>
+                        <h1>{eachHawker.Name}</h1>
+                        <div>{eachHawker.AddressLine1}</div>
+                        <div>{eachHawker.AddressLine2}</div>
+                        <div>{Openornot()}</div>
+                        <div>{eachHawker.OpeningTime} to {eachHawker.ClosingTime}</div>
+                    </CardContent>
+                    <CardActions>
+                        <Link to={`/Hawkers/${eachHawker.id}`}>
+                            <Button>More</Button>
+                        </Link>
+                    </CardActions>
+                </Card>
+            </Grid>
         )
     })
 
